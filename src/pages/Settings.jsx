@@ -1,38 +1,73 @@
-import React from 'react';
-import { FaCloudUploadAlt, FaDatabase } from 'react-icons/fa';
+import React, { useState } from 'react';
+import { FaSave, FaSlidersH } from 'react-icons/fa';
 
-export default function Settings() {
+export default function Settings({ logSystemEvent }) {
+  const [gatewayUri, setGatewayUri] = useState('https://api.sms-relay.cropnexa.internal/v1');
+  const [radiusThreshold, setRadiusThreshold] = useState(25);
+
+  const handleSaveConfig = (e) => {
+    e.preventDefault();
+    logSystemEvent('SYSTEM_CONFIG_MUTATION', `Gateway URI -> ${gatewayUri} | Radius -> ${radiusThreshold}km`, 'SUCCESS');
+    alert('System operational parameters updated and logged.');
+  };
+
   return (
-    <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm space-y-8 animate-fadeIn">
+    <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm space-y-6 animate-fadeIn">
       <div>
-        <h3 className="text-base font-black text-slate-900 dark:text-white uppercase tracking-wider">System Infrastructure Variables</h3>
-        <p className="text-xs text-slate-400">Modify framework integration endpoints, system backup nodes, and automation rule thresholds.</p>
+        <h3 className="text-base font-black text-slate-900 dark:text-white uppercase tracking-wider flex items-center gap-2">
+          <FaSlidersH className="text-green-700 text-sm" /> Global Environment Overrides
+        </h3>
+        <p className="text-xs text-slate-400">Mutate macro-system variables and spatial routing distances for real-time mesh networks.</p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs font-sans">
-        <div className="space-y-4">
-          <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-400 border-b border-slate-50 dark:border-slate-700 pb-2">Communications Integration Endpoints</h4>
-          <div className="space-y-3">
-            <div>
-              <span className="text-slate-500 block mb-1 font-bold">Meteorological Satellite API Secret Key</span>
-              <input type="password" value="••••••••••••••••••••••••••••••••" readOnly className="w-full bg-slate-50 dark:bg-slate-700/50 border border-slate-100 dark:border-slate-600 rounded-xl px-4 py-2.5 font-mono text-xs focus:outline-none" />
-            </div>
-            <div>
-              <span className="text-slate-500 block mb-1 font-bold">SMS Network Gateway Node URI</span>
-              <input type="text" value="https://api.sms-relay.cropnexa.internal/v1" readOnly className="w-full bg-slate-50 dark:bg-slate-700/50 border border-slate-100 dark:border-slate-600 rounded-xl px-4 py-2.5 font-mono text-xs focus:outline-none" />
-            </div>
-          </div>
+      <form onSubmit={handleSaveConfig} className="space-y-6 text-xs">
+        {/* API GATEWAY NODE INPUT */}
+        <div>
+          <label className="text-[10px] uppercase font-black tracking-widest text-slate-400 block mb-1">
+            SMS Network Gateway Node URI
+          </label>
+          <input 
+            type="text" 
+            value={gatewayUri} 
+            onChange={(e) => setGatewayUri(e.target.value)} 
+            className="w-full bg-slate-50 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-700 focus:border-green-700 focus:outline-none rounded-xl px-4 py-3 font-mono text-slate-800 dark:text-white transition-all" 
+          />
         </div>
 
-        <div className="space-y-4">
-          <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-400 border-b border-slate-50 dark:border-slate-700 pb-2">Storage Snapshot & DB Restores</h4>
-          <p className="text-xs text-slate-400 leading-relaxed">Snap system database status to independent cloud block endpoints daily. Ensure continuity configurations remain validated.</p>
-          <div className="flex flex-wrap gap-2 pt-2">
-            <button onClick={() => alert('Compiling target database state snapshot... Saved.')} className="px-4 py-2.5 bg-slate-900 dark:bg-slate-700 text-white font-bold text-xs uppercase tracking-wider rounded-xl hover:bg-slate-800 transition-all flex items-center space-x-1.5"><FaDatabase /> <span>Backup DB Now</span></button>
-            <button onClick={() => alert('Accessing recovery matrix options...')} className="px-4 py-2.5 bg-amber-500 text-white font-bold text-xs uppercase tracking-wider rounded-xl hover:bg-amber-600 transition-all flex items-center space-x-1.5"><FaCloudUploadAlt /> <span>Restore State</span></button>
+        {/* SPATIAL RADIAL COMPONENT SLIDER */}
+        <div className="bg-slate-50 dark:bg-slate-900/40 p-5 rounded-xl border border-slate-100 dark:border-slate-700/50 space-y-3">
+          <div className="flex justify-between items-center">
+            <div>
+              <label className="text-[10px] uppercase font-black tracking-widest text-slate-400 block">
+                Broadcast Spatial Radius Limit
+              </label>
+              <span className="text-[11px] text-slate-400 font-sans block mt-0.5">
+                Defines the cell tower propagation zone for climate warnings.
+              </span>
+            </div>
+            <span className="font-mono font-black text-sm text-green-700 dark:text-green-400 bg-white dark:bg-slate-800 px-3 py-1 rounded-lg border border-slate-200 dark:border-slate-700 shadow-xs">
+              {radiusThreshold} km
+            </span>
           </div>
+          <input 
+            type="range" 
+            min="5" 
+            max="100" 
+            step="5" 
+            value={radiusThreshold} 
+            onChange={(e) => setRadiusThreshold(Number(e.target.value))} 
+            className="w-full accent-green-700 h-1.5 bg-slate-200 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer" 
+          />
         </div>
-      </div>
+
+        {/* FORM COMMIT ACTIONS */}
+        <button 
+          type="submit" 
+          className="px-5 py-3 bg-green-700 hover:bg-green-800 text-white font-bold text-xs uppercase tracking-wider rounded-xl shadow-md transition-all flex items-center space-x-2"
+        >
+          <FaSave /> <span>Commit System Changes</span>
+        </button>
+      </form>
     </div>
   );
 }

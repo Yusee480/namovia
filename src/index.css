@@ -1,1 +1,4 @@
 @import "tailwindcss";
+
+/* If you have any custom CSS layers or rules that use @apply, 
+   make sure they are written AFTER the import line above */
