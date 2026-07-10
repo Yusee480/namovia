@@ -66,19 +66,19 @@ export default function MainContainerApp({ setScreen }) {
     switch (activeTab) {
       case 'Dashboard':   return <AdminDashboard setActiveTab={setActiveTab} metrics={platformMetrics} />;
       case 'Farmers':     return <Farmers count={platformMetrics.totalFarmersCount} />;
-      
-      case 'Admins':      
+
+       case 'Admins':      
         return <Users administrators={administrators} setAdministrators={setAdministrators} logSystemEvent={logSystemEvent} />;
-      
+
       case 'Weather':     
         return <Weather bulletins={bulletins} logSystemEvent={logSystemEvent} />;
         
       case 'Crops':       return <Crops />;
       case 'Fertilizers': return <Fertilizers />;
       
-      case 'Markets':     
+     case 'Markets':     
         return <Markets listings={listings} setListings={setListings} trends={platformMetrics.marketTrends} logSystemEvent={logSystemEvent} />;
-      
+
       case 'Reports':     
         return <Reports logSystemEvent={logSystemEvent} />;
       
@@ -97,10 +97,14 @@ export default function MainContainerApp({ setScreen }) {
   };
 
   return (
-    <AdminLayout activeTab={activeTab} setActiveTab={setActiveTab} setScreen={setScreen}>
-      <div className={`transition-opacity duration-150 ease-in-out ${isTransitioning ? 'opacity-40' : 'opacity-100'}`}>
-        {selectTabComponent()}
-      </div>
-    </AdminLayout>
+    <AdminLayout 
+  activeTab={activeTab}       // Tabbatar ka wuce wannan prop din
+  setActiveTab={setActiveTab} // Tabbatar ka wuce wannan prop din
+  setScreen={setScreen}
+>
+  <div className={`transition-opacity duration-150 ease-in-out ${isTransitioning ? 'opacity-40' : 'opacity-100'}`}>
+    {selectTabComponent()}
+  </div>
+</AdminLayout>
   );
 }

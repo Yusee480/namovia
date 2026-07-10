@@ -9,22 +9,25 @@ export default function App() {
   const [userRole, setUserRole] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
+ useEffect(() => {
     const savedUser = localStorage.getItem('currentUser');
     if (savedUser) {
       try {
         const user = JSON.parse(savedUser);
         setUserRole(user.role);
-        // Direct routing based on cached credential profile parameters
-        setScreen(user.role === 'admin' ? 'admin' : 'user');
+        // KA GOGE WANNAN LAYIN:
+        // setScreen(user.role === 'admin' ? 'admin' : 'user'); 
+        
+        // KA BAR SA A 'home' DOMIN YA NUNA LANDING PAGE TUKUNNA
+        setScreen('home'); 
       } catch (error) {
-        console.error("Failed to deserialize user identity node session", error);
+        console.error("Failed to deserialize session", error);
         localStorage.removeItem('currentUser');
       }
     }
     setIsLoading(false);
   }, []);
-
+  
   const handleAuthSuccess = (role) => {
     setUserRole(role);
     // Routing switch: Idan admin ne, kiran 'admin', idan user ne 'user'

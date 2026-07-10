@@ -4,7 +4,7 @@ import {
   FaUsers, FaStore, FaSignOutAlt, FaUserCircle 
 } from 'react-icons/fa';
 
-export default function AdminLayout({ children, currentScreen, setScreen }) {
+export default function AdminLayout({ children, activeTab, setActiveTab, setScreen }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   // Initializing as false to prevent hydration mismatch
   const [darkMode, setDarkMode] = useState(false);
@@ -15,12 +15,11 @@ export default function AdminLayout({ children, currentScreen, setScreen }) {
     setDarkMode(isDark);
   }, []);
 
-  
-useEffect(() => {
   // Use currentScreen || 'Home' to ensure it's never undefined/empty
-  const screenName = currentScreen || 'Home';
+ useEffect(() => {
+  const screenName = activeTab || 'Home';
   document.title = `CropNexa | ${screenName.charAt(0).toUpperCase() + screenName.slice(1)}`;
-}, [currentScreen]);
+}, [activeTab]);
 
   // Dark Mode Sync
   useEffect(() => {
@@ -34,9 +33,9 @@ useEffect(() => {
   }, [darkMode]);
 
   const navigationLinks = [
-    { name: 'Dashboard', screenKey: 'dashboard', icon: <FaThLarge /> },
-    { name: 'Farmers Ledger', screenKey: 'farmers', icon: <FaUsers /> },
-    { name: 'Market Intel', screenKey: 'markets', icon: <FaStore /> },
+    { name: 'Dashboard', screenKey: 'Dashboard', icon: <FaThLarge /> },
+    { name: 'Farmers Ledger', screenKey: 'Farmers', icon: <FaUsers /> },
+    { name: 'Market Intel', screenKey: 'Markets', icon: <FaStore /> },
   ];
 
   const handleSignOut = () => {
@@ -71,21 +70,24 @@ useEffect(() => {
           </div>
 
           <nav className="p-4 space-y-1">
-            {navigationLinks.map((link) => (
-              <button
-                key={link.screenKey}
-                aria-current={currentScreen === link.screenKey ? 'page' : undefined}
-                onClick={() => { setScreen(link.screenKey); setSidebarOpen(false); }}
-                className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold transition-all ${
-                  currentScreen === link.screenKey 
-                    ? 'bg-green-700 text-white shadow-sm' 
-                    : 'text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-700/50 hover:text-slate-700 dark:hover:text-slate-200'
-                }`}
-              >
-                <span className="text-sm">{link.icon}</span>
-                {link.name}
-              </button>
-            ))}
+           {navigationLinks.map((link) => (
+  <button
+    key={link.screenKey}
+    onClick={() => setActiveTab(link.screenKey)}
+    // Wannan className din shi zai sa button din ya zama kyakkyawa
+    className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 
+      ${activeTab === link.screenKey 
+        ? 'bg-green-700 text-white shadow-lg' 
+        : 'text-slate-600 hover:bg-slate-100'
+      }`}
+  >
+    {/* Icon din link din */}
+    <span className="text-lg">{link.icon}</span>
+    
+    {/* Rubutun link din */}
+    <span>{link.name}</span>
+  </button>
+))}
           </nav>
         </div>
 
@@ -105,7 +107,7 @@ useEffect(() => {
         <header className="h-16 bg-white dark:bg-slate-800 border-b border-slate-100 dark:border-slate-700 flex items-center justify-between px-6 sticky top-0 z-30">
           <button onClick={() => setSidebarOpen(true)} aria-label="Open Sidebar" className="text-slate-500 lg:hidden text-sm"><FaBars /></button>
           <h2 className="text-xs font-black uppercase tracking-widest text-slate-400 hidden sm:block">
-             {currentScreen}
+             
           </h2>
           <div className="flex items-center gap-4">
             <button onClick={() => setDarkMode(!darkMode)} className="p-2 bg-slate-50 dark:bg-slate-700 rounded-xl text-slate-500 transition-colors text-sm">

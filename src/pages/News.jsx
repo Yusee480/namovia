@@ -20,7 +20,7 @@ export default function News({ bulletins, setBulletins, logSystemEvent }) {
     };
 
     setBulletins([newNotice, ...bulletins]);
-    logSystemEvent('NEWS_BULLETIN_DISPATCH', `${category}: ${title.trim()}`, 'SUCCESS');
+    logSystemEvent('NEWS_BULLETIN_DISPATCH', title.trim());
     setTitle('');
     setContent('');
     setSelectedFilter('All');
@@ -55,7 +55,7 @@ export default function News({ bulletins, setBulletins, logSystemEvent }) {
           <div>
             <label className="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">Broadcast Stream Type</label>
             <select value={category} onChange={(e) => setCategory(e.target.value)} className="w-full bg-slate-50 dark:bg-slate-700 border border-slate-100 dark:border-slate-600 rounded-xl px-4 py-3 text-xs focus:outline-none focus:border-[#15803D] text-slate-900 dark:text-white font-medium">
-              <option value="Weather font-sans">Weather Alert 🌤</option>
+              <option value="Weather">Weather Alert 🌤</option>
               <option value="Agronomy">Agronomy Guide 🌱</option>
               <option value="System">System Update ⚙️</option>
             </select>
@@ -103,7 +103,7 @@ export default function News({ bulletins, setBulletins, logSystemEvent }) {
                   <h4 className="text-sm font-bold text-slate-900 dark:text-white">{b.title}</h4>
                   <p className="text-xs text-slate-500 dark:text-slate-400 font-sans">{b.content}</p>
                 </div>
-                <button onClick={() => handlePurge(b.id)} className="p-2 text-slate-400 hover:text-rose-600 rounded-lg bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 transition-all flex-shrink-0">
+                <button onClick={() => handlePurge(b.id)} className="p-2 text-slate-400 hover:text-rose-600 rounded-lg bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 transition-all">
                   <FaTrash className="text-xs" />
                 </button>
               </div>

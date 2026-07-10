@@ -2,6 +2,12 @@ import React, { useState } from 'react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import { FaUsers, FaMapMarkerAlt, FaCloudSun, FaUserShield, FaPlus, FaCloudDownloadAlt, FaTrash, FaSearch, FaUserCheck, FaMap, FaToggleOn, FaToggleOff, FaTimes, FaCheckCircle, FaBullhorn } from 'react-icons/fa';
 import { useLocalStorage } from './useLocalStorage';
+import News from './News';
+import Profile from './Profile'; 
+import ReportS from './Reports';
+import MarketS from './Markets';
+import Fertilizers from './Fertilizers'; 
+import Farmers from './Farmers';
 
 const monthlyData = [
   { name: 'Jan', Users: 400, Customers: 180, Searches: 1200 },
@@ -129,6 +135,7 @@ export default function AdminDashboard({ setActiveTab }) {
           <span>{systemAlert}</span>
         </div>
       )}
+      
 
       {/* COMMAND CONTROL MATRIX */}
       <div className="bg-white dark:bg-slate-950 p-6 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm">
@@ -374,4 +381,5 @@ export default function AdminDashboard({ setActiveTab }) {
 
     </div>
   );
+  
 }
