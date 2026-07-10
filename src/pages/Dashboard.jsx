@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   FaMapMarkerAlt, 
   FaHandshake, 
@@ -11,10 +11,10 @@ import {
   FaSearch, 
   FaUser, 
   FaLock, 
-  FaSave 
+  FaSave,
+  FaBell,
+  FaSignOutAlt 
 } from 'react-icons/fa';
-import { FaBell } from 'react-icons/fa';
-
 
 // ==========================================
 // SUB-COMPONENT: CROPS RECOMMENDATIONS
@@ -24,7 +24,6 @@ function Crops() {
   const [region, setRegion] = useState('Northern Savanna');
   const [moisture, setMoisture] = useState('Medium');
   
-  // New State to hold recommendations after submission
   const [computedRecommendations, setComputedRecommendations] = useState([]);
   const [hasSubmitted, setHasSubmitted] = useState(false);
 
@@ -51,7 +50,6 @@ function Crops() {
         <p className="text-xs text-slate-400">Configure your parameters below to compute live matrix alignments for your micro-zone.</p>
       </div>
 
-      {/* FORM INTERACTION MATRIX */}
       <form onSubmit={handleSubmitQuiz} className="space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
@@ -63,7 +61,7 @@ function Crops() {
             </select>
           </div>
           <div>
-            <label className="block text-[10px] font-bold text-slate-400 uppercase mb-1">Geographic Aggregation Region (Your Zone)</label>
+            <label className="block text-[10px] font-bold text-slate-400 uppercase mb-1">Geographic Aggregation Region</label>
             <select value={region} onChange={e => setRegion(e.target.value)} className="w-full border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 bg-white focus:outline-none focus:border-emerald-700">
               <option value="Northern Savanna">Northern Savanna</option>
               <option value="Southern Rainforest">Southern Rainforest</option>
@@ -87,7 +85,6 @@ function Crops() {
         </div>
       </form>
 
-      {/* CONDITIONAL RENDERED RESULTS LAYER */}
       {hasSubmitted ? (
         <div className="space-y-3 pt-2 border-t border-slate-50">
           <h4 className="text-xs font-black uppercase text-slate-400 tracking-wider">Computed Metrics for Zone: <span className="text-slate-700">{region}</span></h4>
@@ -115,6 +112,10 @@ function Crops() {
     </div>
   );
 }
+
+// ==========================================
+// SUB-COMPONENT: PROFILE SETTINGS
+// ==========================================
 function ProfileSettings({ profileData, onSaveProfile }) {
   const [form, setForm] = useState({
     fullName: profileData.fullName,
@@ -130,20 +131,21 @@ function ProfileSettings({ profileData, onSaveProfile }) {
     confirmPassword: ''
   });
 
-  // Process selected local picture asset files
   const handleImageFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      const inlineUrl = URL.createObjectURL(file);
-      setForm(prev => ({ ...prev, avatarUrl: inlineUrl }));
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setForm(prev => ({ ...prev, avatarUrl: reader.result }));
+      };
+      reader.readAsDataURL(file);
     }
   };
 
   const handleUpdateInfo = (e) => {
-  e.preventDefault();
-  onSaveProfile(form); 
-  alert('Enterprise profile properties saved successfully.');
-};
+    e.preventDefault();
+    onSaveProfile(form);
+  };
 
   const handleUpdatePassword = (e) => {
     e.preventDefault();
@@ -157,7 +159,6 @@ function ProfileSettings({ profileData, onSaveProfile }) {
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 animate-fadeIn">
-      {/* AVATAR INTERFACE BLOCK */}
       <div className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex flex-col items-center justify-center text-center space-y-4">
         <div className="w-24 h-24 rounded-2xl bg-gradient-to-tr from-green-700 to-emerald-950 text-white font-black text-2xl flex items-center justify-center shadow-md overflow-hidden relative group">
           {form.avatarUrl ? (
@@ -170,12 +171,7 @@ function ProfileSettings({ profileData, onSaveProfile }) {
         <div className="space-y-1 w-full">
           <label className="cursor-pointer inline-block bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-bold px-3 py-1.5 rounded-lg transition-colors w-full max-w-[180px]">
             <span>Upload Image File</span>
-            <input 
-              type="file" 
-              accept="image/*" 
-              className="hidden" 
-              onChange={handleImageFileChange} 
-            />
+            <input type="file" accept="image/*" className="hidden" onChange={handleImageFileChange} />
           </label>
           <p className="text-[9px] text-slate-400">Supports PNG, JPG assets</p>
         </div>
@@ -186,7 +182,6 @@ function ProfileSettings({ profileData, onSaveProfile }) {
         </div>
       </div>
 
-      {/* TEXT PARAMETERS AND SETTINGS MATRICES */}
       <div className="lg:col-span-2 space-y-6">
         <div className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm space-y-4">
           <div className="flex items-center space-x-2 border-b border-slate-100 pb-2">
@@ -208,7 +203,7 @@ function ProfileSettings({ profileData, onSaveProfile }) {
             </div>
             <div>
               <label className="block text-[10px] font-bold text-slate-400 uppercase mb-1">Direct URL Link Route Override</label>
-              <input type="text" value={form.avatarUrl} onChange={e => setForm({ ...form, avatarUrl: e.target.value })} placeholder="Or parse web image url links directly..." className="w-full border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:border-emerald-700" />
+              <input type="text" value={form.avatarUrl} onChange={e => setForm({ ...form, avatarUrl: e.target.value })} placeholder="Web image link route..." className="w-full border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:border-emerald-700" />
             </div>
             <div className="sm:col-span-2">
               <label className="block text-[10px] font-bold text-slate-400 uppercase mb-1">Physical Operational Base Address</label>
@@ -250,7 +245,9 @@ function ProfileSettings({ profileData, onSaveProfile }) {
       </div>
     </div>
   );
-}// ==========================================
+}
+
+// ==========================================
 // SUB-COMPONENT: FALLBACK TAB MODULE
 // ==========================================
 function FallbackTab({ tabName }) {
@@ -260,7 +257,7 @@ function FallbackTab({ tabName }) {
       <div>
         <h3 className="text-sm font-black text-slate-800 uppercase tracking-wider">{tabName} Engine Stack</h3>
         <p className="text-xs text-slate-400 max-w-sm mx-auto mt-1">
-          This feature module is running structural logic analytics. Live optimization feeds are connecting to database pipelines shortly.
+          This feature module is running structural logic analytics. Live optimization feeds are connecting shortly.
         </p>
       </div>
     </div>
@@ -275,23 +272,36 @@ export default function Dashboard() {
   const [searchQuery, setSearchQuery] = useState('');
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
-  // USER PROFILE ROOT INFRASTRUCTURE
- const [profile, setProfile] = useState(() => {
-  const currentUser = JSON.parse(localStorage.getItem('currentUser'));
-  const savedProfile = localStorage.getItem('userProfile');
-  return currentUser ? {
-    fullName: currentUser.fullName,
-    email: currentUser.email,
-    phone: currentUser.phone || '+234 --- --- ----',
-    address: currentUser.location || 'Not set',
-    avatarUrl: ''
-  } : {
-    fullName: 'Guest User',
-    email: 'guest@cropnexa.internal',
-  };
-});
+  const [profile, setProfile] = useState(() => {
+    const currentUser = JSON.parse(localStorage.getItem('currentUser')) || {};
+    const savedProfile = JSON.parse(localStorage.getItem('userProfile'));
+    return savedProfile || {
+      fullName: currentUser.fullName || 'Guest User',
+      email: currentUser.email || 'guest@cropnexa.internal',
+      phone: currentUser.phone || '+234 --- --- ----',
+      address: currentUser.location || 'Not set',
+      avatarUrl: ''
+    };
+  });
 
-  // CORE APPLICATION INFRASTRUCTURE ARRAYS
+  const handleSaveProfile = (newProfile) => {
+    setProfile(newProfile);
+    localStorage.setItem('userProfile', JSON.stringify(newProfile));
+    alert('Enterprise profile properties saved successfully.');
+  };
+
+  // LOGOUT MECHANISM
+  const handleLogout = () => {
+    const confirmLogout = window.confirm('Are you sure you want to terminate the system session?');
+    if (confirmLogout) {
+      localStorage.removeItem('currentUser'); 
+      alert('Session terminated. Relocating to access gate...');
+      // If using React Router, trigger a redirect here (e.g. navigate('/login'))
+      // For this static matrix preview, fallback to page reset or reload:
+      window.location.reload();
+    }
+  };
+
   const [farms, setFarms] = useState([
     { id: 1, name: 'Potiskum North Array A', size: '5.2 Hectares', crop: 'Sorgo / Sorghum', region: 'Yobe Sector Alpha' },
     { id: 2, name: 'Fika Road Outskirts', size: '2.8 Hectares', crop: 'Cowpeas', region: 'Yobe Sector Beta' }
@@ -315,19 +325,21 @@ export default function Dashboard() {
   const [activeChannel, setActiveChannel] = useState('General Agronomy');
   const [typedMessage, setTypedMessage] = useState('');
 
-  // TRANSACTIONAL PARAMETERS & MARKET BOARD ARRAYS
   const [marketData] = useState([
     { id: 1, crop: 'White Sorghum Matrix', seller: 'Borno Grain Alliance', market: 'Maiduguri Hub C', price: 42000 },
     { id: 2, crop: 'Premium Cowpeas Bundle', seller: 'Yobe Tech Farm Co', market: 'Potiskum Central Index', price: 58000 },
     { id: 3, crop: 'Soybean High-Yield Extract', seller: 'Gombe Aggregate Spore', market: 'Gombe Inter-State Vault', price: 61000 }
   ]);
 
-  const [tradeStep, setTradeStep] = useState('browse'); // States: browse, negotiate, escrow
+  const [tradeStep, setTradeStep] = useState('browse'); 
   const [selectedOffer, setSelectedOffer] = useState(null);
   const [orderQuantity, setOrderQuantity] = useState(1);
   
+  const [notifications] = useState([
+    { id: 1, message: 'Market prices updated for Yobe Hub' },
+    { id: 2, message: 'New message in General Agronomy' }
+  ]);
 
-  // LOGICAL HANDLERS FOR FORMS & DISPATCH FEEDS
   const handleAddFarm = (e) => {
     e.preventDefault();
     if (!newFarm.name || !newFarm.size) return;
@@ -357,10 +369,6 @@ export default function Dashboard() {
     { name: 'Notifications', icon: '💬', badge: 'Live' },
     { name: 'Profile', icon: '👤' }
   ];
-const [notifications, setNotifications] = useState([
-  { id: 1, message: 'Market prices updated for Yobe Hub' },
-  { id: 2, message: 'New message in General Agronomy' }
-]);
 
   const filteredMenuItems = menuItems.filter(item => 
     item.name.toLowerCase().includes(searchQuery.toLowerCase())
@@ -371,13 +379,12 @@ const [notifications, setNotifications] = useState([
       case 'Dashboard':
         return (
           <div className="space-y-6 animate-fadeIn">
-            {/* HERO HERO COMPONENT SECTION */}
             <div className="bg-gradient-to-br from-green-800 via-emerald-800 to-slate-900 rounded-2xl p-6 sm:p-8 shadow-md relative overflow-hidden text-white border border-emerald-700/30">
               <div className="relative z-10 max-w-2xl space-y-4">
                 <span className="inline-block px-3 py-1 bg-white/10 backdrop-blur-md text-[10px] font-bold uppercase tracking-wider rounded-full text-green-300 border border-white/10">Active System Session</span>
                 <h1 className="text-2xl sm:text-4xl font-black tracking-tight">Welcome, {profile.fullName.split(' ')[0]} 👋</h1>
                 <p className="text-sm text-green-100/80 leading-relaxed">
-                  Real-time analytics for your enterprise cultivation arrays. Review micro-nutrient calibrations and live market updates down below.
+                  Real-time analytics for your enterprise cultivation arrays. Review micro-nutrient calibrations down below.
                 </p>
                 <div className="flex flex-wrap items-center gap-3 pt-2">
                   <button onClick={() => setActiveTab('Crop Recommendations')} className="bg-yellow-400 text-slate-950 text-xs font-black px-4 py-2.5 rounded-xl hover:bg-yellow-300 transition-all shadow-sm">Launch Recommendations</button>
@@ -386,7 +393,6 @@ const [notifications, setNotifications] = useState([
               </div>
             </div>
 
-            {/* QUICK LINK CARD MODULES */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {[
                 { title: 'Registered Land', value: `${farms.length} Plots`, desc: 'Active farming arrays', icon: <FaMapMarkerAlt className="text-emerald-600" />, color: 'bg-emerald-50' },
@@ -407,7 +413,6 @@ const [notifications, setNotifications] = useState([
               ))}
             </div>
 
-            {/* SUMMARY ACTION BRIDGES */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <div className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm space-y-3">
                 <h3 className="text-xs font-black uppercase text-slate-400 tracking-wider">Active Land Footprint</h3>
@@ -426,7 +431,7 @@ const [notifications, setNotifications] = useState([
 
               <div className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex flex-col justify-between">
                 <h3 className="text-xs font-black uppercase text-slate-400 tracking-wider mb-2">Instant Trade Initiation Bridge</h3>
-                <p className="text-xs text-slate-500 mb-4">Select the Market Prices tab to select an index payload, choose a secure contract matrix volume, and process direct buy/sell arrangements instantly.</p>
+                <p className="text-xs text-slate-500 mb-4">Select the Market Prices tab to select an index payload, choose a secure contract matrix volume, and process buy/sell arrangements instantly.</p>
                 <button onClick={() => setActiveTab('Market Prices')} className="w-full bg-emerald-700 text-white font-bold text-xs py-2.5 rounded-xl hover:bg-emerald-800 transition-colors">Launch Procurement Board</button>
               </div>
             </div>
@@ -436,7 +441,6 @@ const [notifications, setNotifications] = useState([
       case 'Farm Locations':
         return (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 animate-fadeIn">
-            {/* FARM REGISTRATION FORM */}
             <div className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm space-y-4">
               <div>
                 <h3 className="text-sm font-black uppercase tracking-wider text-slate-800">Register New Farm Plot</h3>
@@ -449,7 +453,7 @@ const [notifications, setNotifications] = useState([
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-[10px] font-bold text-slate-400 uppercase mb-1">Size (Hectares/Acres)</label>
+                    <label className="block text-[10px] font-bold text-slate-400 uppercase mb-1">Size (Hectares)</label>
                     <input type="text" placeholder="e.g. 4.5 Hectares" value={newFarm.size} onChange={e => setNewFarm({...newFarm, size: e.target.value})} className="w-full border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:border-emerald-700" required />
                   </div>
                   <div>
@@ -467,7 +471,6 @@ const [notifications, setNotifications] = useState([
               </form>
             </div>
 
-            {/* PLOT INVENTORY VIEWPORT */}
             <div className="lg:col-span-2 bg-white p-5 rounded-2xl border border-slate-100 shadow-sm space-y-4">
               <div className="flex items-center justify-between">
                 <h3 className="text-sm font-black uppercase tracking-wider text-slate-800">Your Declared Land Inventory</h3>
@@ -497,7 +500,6 @@ const [notifications, setNotifications] = useState([
       case 'Notifications':
         return (
           <div className="bg-white rounded-2xl border border-slate-100 shadow-sm min-h-[480px] grid grid-cols-1 md:grid-cols-3 overflow-hidden animate-fadeIn">
-            {/* CHANNELS PANEL */}
             <div className="border-r border-slate-100 p-4 bg-slate-50/50 space-y-3">
               <h3 className="text-xs font-black uppercase text-slate-400 tracking-wider">Agronomic Channels</h3>
               <div className="space-y-1">
@@ -510,7 +512,6 @@ const [notifications, setNotifications] = useState([
               </div>
             </div>
 
-            {/* LIVE CONVERSATION TIMELINE */}
             <div className="md:col-span-2 flex flex-col justify-between h-[480px]">
               <div className="p-4 border-b border-slate-100 flex items-center justify-between bg-white">
                 <div>
@@ -519,7 +520,6 @@ const [notifications, setNotifications] = useState([
                 </div>
               </div>
 
-              {/* BUBBLE FEED */}
               <div className="flex-1 p-4 overflow-y-auto space-y-3 bg-slate-50/30">
                 {(chatRooms[activeChannel] || []).map((msg, i) => (
                   <div key={i} className={`flex flex-col max-w-[75%] ${msg.self ? 'ml-auto items-end' : 'mr-auto items-start'}`}>
@@ -532,7 +532,6 @@ const [notifications, setNotifications] = useState([
                 ))}
               </div>
 
-              {/* CHAT INPUT MATRIX CONTAINER */}
               <form onSubmit={handleSendMessage} className="p-3 border-t border-slate-100 bg-white flex items-center space-x-2">
                 <input type="text" placeholder={`Transmit data chunk into #${activeChannel}...`} value={typedMessage} onChange={e => setTypedMessage(e.target.value)} className="flex-1 border border-slate-200 rounded-xl px-4 py-2 text-xs focus:outline-none focus:border-emerald-700 text-slate-800" />
                 <button type="submit" className="bg-emerald-700 hover:bg-emerald-800 text-white p-2.5 rounded-xl transition-colors"><FaPaperPlane className="text-xs" /></button>
@@ -604,7 +603,7 @@ const [notifications, setNotifications] = useState([
                 </div>
                 
                 <div className="space-y-1.5">
-                  <label className="block text-[10px] font-bold text-slate-400 uppercase">Volume Requirements (Bags of Produce)</label>
+                  <label className="block text-[10px] font-bold text-slate-400 uppercase">Volume Requirements (Bags)</label>
                   <input type="number" min="1" value={orderQuantity} onChange={e => setOrderQuantity(parseInt(e.target.value) || 1)} className="w-full border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:border-emerald-700 bg-white" />
                 </div>
 
@@ -625,13 +624,13 @@ const [notifications, setNotifications] = useState([
                 <div>
                   <h4 className="font-black text-sm text-emerald-950 uppercase tracking-wider">Escrow Transaction Seed Synchronized</h4>
                   <p className="text-xs text-emerald-800/80 mt-1">
-                    A total value allocation of <strong>₦{(selectedOffer.price * orderQuantity).toLocaleString()}</strong> has been initiated between your buyer profile and <strong>{selectedOffer.seller}</strong>.
+                    A total value allocation of <strong>₦{(selectedOffer.price * orderQuantity).toLocaleString()}</strong> has been initiated with <strong>{selectedOffer.seller}</strong>.
                   </p>
                 </div>
                 <div className="text-[10px] bg-white border border-emerald-100 rounded-xl p-3 text-left space-y-1 font-mono text-slate-500">
                   <p>• Transacting Hash: TX-M4Z-{Math.floor(Math.random() * 90000 + 10000)}</p>
                   <p>• Status: Awaiting Buyer Vault Proofing</p>
-                  <p>• Allocation: {orderQuantity} Matrix Bags of {selectedOffer.crop}</p>
+                  <p>• Allocation: {orderQuantity} Bags of {selectedOffer.crop}</p>
                 </div>
                 <div className="flex space-x-2 pt-2">
                   <button onClick={() => { alert('Escrow payment simulation committed.'); setTradeStep('browse'); }} className="flex-1 bg-emerald-700 text-white font-bold text-xs py-2 rounded-xl hover:bg-emerald-800 transition-colors">Release Funds</button>
@@ -644,7 +643,7 @@ const [notifications, setNotifications] = useState([
 
       case 'Weather Forecast':
         return (
-          <div className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm space-y-6 animate-fadeIn">
+          <div className="bg-white border border-slate-100 rounded-2xl p-6 shadow-sm space-y-6 animate-fadeIn">
             <div>
               <h3 className="text-lg font-bold text-gray-900">Advanced Weather Forecast Matrix</h3>
               <p className="text-xs text-gray-400">7-Day radar forecasting models mapped for Potiskum grid infrastructure.</p>
@@ -672,19 +671,9 @@ const [notifications, setNotifications] = useState([
 
       case 'Crop Recommendations': 
         return <Crops />;
-      case 'Fertilizer Guide':
-      case 'Pest & Disease':
-        return <FallbackTab tabName={activeTab} />;
-      case 'Settings':
-
       case 'Profile':
-  return (
-    <ProfileSettings 
-      profileData={profile} 
-      onSaveProfile={(newProfile) => setProfile(newProfile)} // Wannan zai sabunta state din Dashboard
-    />
-  );
-   default:
+        return <ProfileSettings profileData={profile} onSaveProfile={handleSaveProfile} />;
+      default:
         return <FallbackTab tabName={activeTab} />;
     }
   };
@@ -697,6 +686,8 @@ const [notifications, setNotifications] = useState([
           <span className="text-xl">🌾</span>
           <span className="font-black text-lg tracking-tight text-slate-900">Crop<span className="text-green-700">Nexa</span></span>
         </div>
+        
+        {/* MAIN NAVIGATION ITEMS */}
         <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
           {filteredMenuItems.map((item) => (
             <button key={item.name} onClick={() => setActiveTab(item.name)} className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-bold transition-all group ${activeTab === item.name ? 'bg-green-50 text-green-700' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'}`}>
@@ -705,34 +696,52 @@ const [notifications, setNotifications] = useState([
                 <span>{item.name}</span>
               </div>
               {item.badge && <span className="bg-emerald-700 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full">{item.badge}</span>}
+              {item.name === 'Notifications' && notifications?.length > 0 && (
+                <span className="bg-red-500 text-white rounded-full text-[10px] w-4 h-4 flex items-center justify-center font-mono">
+                  {notifications.length}
+                </span>
+              )}
             </button>
           ))}
-          <div className="relative">
-  <FaBell />
-  {notifications?.length > 0 && (
-  <span className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full text-[10px] w-4 h-4 flex items-center justify-center">
-    {notifications.length}
-  </span>
-)}
-</div>
         </nav>
+
+        {/* LOGOUT FOOTER ACTION */}
+        <div className="p-3 border-t border-slate-100">
+          <button onClick={handleLogout} className="w-full flex items-center space-x-2.5 px-3 py-2.5 text-xs font-bold text-red-600 hover:bg-red-50 rounded-xl transition-all">
+            <FaSignOutAlt className="text-sm" />
+            <span>Terminate Session</span>
+          </button>
+        </div>
       </aside>
 
       {/* MOBILE SIDEBAR WRAPPER */}
       {isMobileSidebarOpen && (
         <div className="fixed inset-0 z-50 lg:hidden flex animate-fadeIn">
           <div className="fixed inset-0 bg-slate-900/30 backdrop-blur-sm" onClick={() => setIsMobileSidebarOpen(false)} />
-          <aside className="relative flex flex-col w-64 max-w-xs bg-white h-full shadow-xl border-r border-gray-100 z-10 p-4 space-y-4">
-            <div className="flex items-center justify-between pb-2 border-b">
-              <span className="font-black text-slate-900">CropNexa Menu</span>
-              <button onClick={() => setIsMobileSidebarOpen(false)}><FaTimes /></button>
+          <aside className="relative flex flex-col w-64 max-w-xs bg-white h-full shadow-xl border-r border-gray-100 z-10 p-4 justify-between">
+            <div className="space-y-4">
+              <div className="flex items-center justify-between pb-2 border-b">
+                <span className="font-black text-slate-900">CropNexa Menu</span>
+                <button onClick={() => setIsMobileSidebarOpen(false)}><FaTimes /></button>
+              </div>
+              <div className="space-y-1">
+                {filteredMenuItems.map((item) => (
+                  <button key={item.name} onClick={() => { setActiveTab(item.name); setIsMobileSidebarOpen(false); }} className={`w-full text-left px-3 py-2 rounded-xl text-xs font-bold flex items-center justify-between ${activeTab === item.name ? 'bg-green-50 text-green-700' : 'text-slate-500'}`}>
+                    <span className="flex items-center">{item.icon} <span className="ml-2">{item.name}</span></span>
+                    {item.name === 'Notifications' && notifications?.length > 0 && (
+                      <span className="bg-red-500 text-white rounded-full text-[10px] w-4 h-4 flex items-center justify-center font-mono">{notifications.length}</span>
+                    )}
+                  </button>
+                ))}
+              </div>
             </div>
-            <div className="space-y-1">
-              {filteredMenuItems.map((item) => (
-                <button key={item.name} onClick={() => { setActiveTab(item.name); setIsMobileSidebarOpen(false); }} className={`w-full text-left px-3 py-2 rounded-xl text-xs font-bold block ${activeTab === item.name ? 'bg-green-50 text-green-700' : 'text-slate-500'}`}>
-                  {item.icon} <span className="ml-2">{item.name}</span>
-                </button>
-              ))}
+
+            {/* MOBILE LOGOUT */}
+            <div className="pt-4 border-t border-slate-100">
+              <button onClick={() => { setIsMobileSidebarOpen(false); handleLogout(); }} className="w-full flex items-center space-x-2 px-3 py-2 text-xs font-bold text-red-600 hover:bg-red-50 rounded-xl transition-all">
+                <FaSignOutAlt />
+                <span>Log Out</span>
+              </button>
             </div>
           </aside>
         </div>
@@ -768,5 +777,4 @@ const [notifications, setNotifications] = useState([
       </div>
     </div>
   );
- 
 }
