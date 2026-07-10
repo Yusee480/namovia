@@ -16,7 +16,18 @@ import FallbackTab from './FallbackTab';
 export default function MainContainerApp({ setScreen }) {
   const [activeTab, setActiveTab] = useState('Dashboard');
   const [isTransitioning, setIsTransitioning] = useState(false);
-
+  const [notifications, setNotifications] = useState([]);
+  
+const addNotification = (message, type = 'info') => {
+  const newNotif = {
+    id: Date.now(),
+    message: message,
+    type: type,
+    read: false,
+    timestamp: new Date().toLocaleTimeString()
+  };
+  setNotifications(prev => [newNotif, ...prev]);
+};
   // --- COHESIVE SYSTEM STATE ENGINE ---
   const [listings, setListings] = useState([
     { crop: 'Hybrid White Maize (100kg)', price: '₦42,000', market: 'Potiskum Central Hub', date: '2026-07-06', trend: 'Bullish Demand', up: true },
@@ -44,6 +55,7 @@ export default function MainContainerApp({ setScreen }) {
     const newLog = { id: Date.now(), action, resource, timestamp: timeString, status };
     setAuditLogs(prev => [newLog, ...prev]);
   };
+
 
   // --- MACRO STATE COUPLING ---
   const platformMetrics = {
@@ -79,12 +91,18 @@ export default function MainContainerApp({ setScreen }) {
      case 'Markets':     
         return <Markets listings={listings} setListings={setListings} trends={platformMetrics.marketTrends} logSystemEvent={logSystemEvent} />;
 
-      case 'Reports':     
-        return <Reports logSystemEvent={logSystemEvent} />;
+      case 'Reports':   
+      return <Reports logSystemEvent={logSystemEvent} />;
       
-      case 'News':        
-        return <News bulletins={bulletins} setBulletins={setBulletins} logSystemEvent={logSystemEvent} />;
-      
+     case 'News':
+  return (
+    <News 
+      bulletins={bulletins} 
+      setBulletins={setBulletins} 
+      addNotification={addNotification} 
+      logSystemEvent={logSystemEvent} 
+    />
+  );
       case 'Settings':    
         return <Settings logSystemEvent={logSystemEvent} />;
       
@@ -107,4 +125,9 @@ export default function MainContainerApp({ setScreen }) {
   </div>
 </AdminLayout>
   );
+  // In MainContainerApp.jsx
+<Dashboard 
+  notifications={notifications} 
+  
+/>
 }

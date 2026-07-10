@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { FaEye, FaTrash, FaUserLock, FaCheckCircle, FaSearch, FaUserPlus, FaTimes, FaUsers, FaUserCheck, FaUserSlash } from 'react-icons/fa';
+import toast from 'react-hot-toast';
 
 export default function Farmers() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -8,6 +9,10 @@ export default function Farmers() {
   
   // State synchronized with localStorage ledger structures
   const [farmers, setFarmers] = useState([]);
+  const handleSaveFarmer = () => {
+  // Your save logic here...
+  toast.success('Farmer record saved successfully!');
+};
 
   // Seed local component nodes from global localStorage on mount
   useEffect(() => {
@@ -84,6 +89,7 @@ export default function Farmers() {
       updateGlobalRegistry(updated);
     }
   };
+  
 
   const handleRegister = (e) => {
     e.preventDefault();
@@ -111,7 +117,7 @@ export default function Farmers() {
     setNewFarmer({ name: '', email: '', phone: '', state: 'Yobe', lga: '', type: 'Commercial Grain' });
   };
 
-  // Dual-layer Pipeline Processing (Search + Status Tabs)
+  
   const filteredFarmers = farmers.filter(f => {
     const matchesSearch = (f.name || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
                           (f.lga || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -119,7 +125,7 @@ export default function Farmers() {
     const matchesStatus = statusFilter === 'All' || f.status === statusFilter;
     return matchesSearch && matchesStatus;
   });
-
+    
   return (
     <div className="space-y-6 animate-fadeIn">
       

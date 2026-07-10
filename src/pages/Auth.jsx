@@ -93,7 +93,7 @@ export default function Auth({ initialMode, setScreen }) {
         joined: new Date().toISOString().split('T')[0]
       };
       localStorage.setItem('allFarmersData', JSON.stringify([...existingFarmers, newFarmerEntry]));
-
+      localStorage.setItem('currentUser', JSON.stringify(user));
       setSuccessMsg('Account registered! Switching to login terminal...');
       
       setTimeout(() => {

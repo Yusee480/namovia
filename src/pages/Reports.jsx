@@ -85,4 +85,15 @@ export default function Reports({ logSystemEvent }) {
       </div>
     </div>
   );
+  return (
+    <div>
+      <h1>View All Reports</h1>
+      {/* This will list everything that was sent to it */}
+      {reportsData.map((item) => (
+        <div key={item.id}>
+          {item.action} - {item.status}
+        </div>
+      ))}
+    </div>
+  );
 }

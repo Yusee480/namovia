@@ -13,6 +13,7 @@ import {
   FaLock, 
   FaSave 
 } from 'react-icons/fa';
+import { FaBell } from 'react-icons/fa';
 
 
 // ==========================================
@@ -29,8 +30,6 @@ function Crops() {
 
   const handleSubmitQuiz = (e) => {
     e.preventDefault();
-    
-    // Matrix simulation matching user zone parameters
     let baseMatchModifier = region === 'Northern Savanna' ? 5 : -3;
     if (soilType === 'Loamy' && moisture === 'Medium') baseMatchModifier += 4;
 
@@ -141,10 +140,10 @@ function ProfileSettings({ profileData, onSaveProfile }) {
   };
 
   const handleUpdateInfo = (e) => {
-    e.preventDefault();
-    onSaveProfile(form);
-    alert('Enterprise profile properties saved successfully.');
-  };
+  e.preventDefault();
+  onSaveProfile(form); 
+  alert('Enterprise profile properties saved successfully.');
+};
 
   const handleUpdatePassword = (e) => {
     e.preventDefault();
@@ -277,13 +276,20 @@ export default function Dashboard() {
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
   // USER PROFILE ROOT INFRASTRUCTURE
-  const [profile, setProfile] = useState({
-    fullName: 'Mustapha Gidado',
-    email: 'm.gidado@cropnexa.internal',
-    phone: '+234 803 123 4567',
-    address: 'Potiskum Agro Hub, Section 4, Yobe State, Nigeria',
+ const [profile, setProfile] = useState(() => {
+  const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+  const savedProfile = localStorage.getItem('userProfile');
+  return currentUser ? {
+    fullName: currentUser.fullName,
+    email: currentUser.email,
+    phone: currentUser.phone || '+234 --- --- ----',
+    address: currentUser.location || 'Not set',
     avatarUrl: ''
-  });
+  } : {
+    fullName: 'Guest User',
+    email: 'guest@cropnexa.internal',
+  };
+});
 
   // CORE APPLICATION INFRASTRUCTURE ARRAYS
   const [farms, setFarms] = useState([
@@ -319,6 +325,7 @@ export default function Dashboard() {
   const [tradeStep, setTradeStep] = useState('browse'); // States: browse, negotiate, escrow
   const [selectedOffer, setSelectedOffer] = useState(null);
   const [orderQuantity, setOrderQuantity] = useState(1);
+  
 
   // LOGICAL HANDLERS FOR FORMS & DISPATCH FEEDS
   const handleAddFarm = (e) => {
@@ -350,6 +357,10 @@ export default function Dashboard() {
     { name: 'Notifications', icon: '💬', badge: 'Live' },
     { name: 'Profile', icon: '👤' }
   ];
+const [notifications, setNotifications] = useState([
+  { id: 1, message: 'Market prices updated for Yobe Hub' },
+  { id: 2, message: 'New message in General Agronomy' }
+]);
 
   const filteredMenuItems = menuItems.filter(item => 
     item.name.toLowerCase().includes(searchQuery.toLowerCase())
@@ -665,9 +676,15 @@ export default function Dashboard() {
       case 'Pest & Disease':
         return <FallbackTab tabName={activeTab} />;
       case 'Settings':
+
       case 'Profile':
-        return <ProfileSettings profileData={profile} onSaveProfile={(data) => setProfile(prev => ({ ...prev, ...data }))} />;
-      default:
+  return (
+    <ProfileSettings 
+      profileData={profile} 
+      onSaveProfile={(newProfile) => setProfile(newProfile)} // Wannan zai sabunta state din Dashboard
+    />
+  );
+   default:
         return <FallbackTab tabName={activeTab} />;
     }
   };
@@ -690,6 +707,14 @@ export default function Dashboard() {
               {item.badge && <span className="bg-emerald-700 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full">{item.badge}</span>}
             </button>
           ))}
+          <div className="relative">
+  <FaBell />
+  {notifications?.length > 0 && (
+  <span className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full text-[10px] w-4 h-4 flex items-center justify-center">
+    {notifications.length}
+  </span>
+)}
+</div>
         </nav>
       </aside>
 
@@ -743,4 +768,5 @@ export default function Dashboard() {
       </div>
     </div>
   );
+ 
 }

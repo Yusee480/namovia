@@ -3,6 +3,7 @@ import Home from './pages/Home.jsx';
 import Auth from './pages/Auth.jsx';
 import MainContainerApp from './pages/MainContainerApp.jsx';
 import Dashboard from './pages/Dashboard.jsx';
+import toast from 'react-hot-toast';
 
 export default function App() {
   const [screen, setScreen] = useState('home');
@@ -27,6 +28,7 @@ export default function App() {
     }
     setIsLoading(false);
   }, []);
+
   
   const handleAuthSuccess = (role) => {
     setUserRole(role);
@@ -61,6 +63,12 @@ export default function App() {
       {/* CONTROL TERMINAL ENDPOINTS */}
       {screen === 'admin' && <MainContainerApp setScreen={setScreen} onLogout={handleLogout} />}
       {screen === 'user' && <Dashboard setScreen={setScreen} onLogout={handleLogout} />}
+    </div>
+  );
+  return (
+    <div>
+      <Toaster position="top-right" />
+      {/* Rest of your app */}
     </div>
   );
 }

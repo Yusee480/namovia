@@ -8,16 +8,20 @@ export default function News({ bulletins, setBulletins, logSystemEvent }) {
   const [selectedFilter, setSelectedFilter] = useState('All');
 
   const handlePublish = (e) => {
-    e.preventDefault();
-    if (!title.trim() || !content.trim()) return;
-
+  e.preventDefault();
+  
+  if (!title.trim() || !content.trim()) return; {
     const newNotice = {
-      id: Date.now(),
-      title: title.trim(),
-      content: content.trim(),
-      date: new Date().toISOString().split('T')[0],
-      category
-    };
+    id: Date.now(),
+    title: title,
+    content: content,
+    timestamp: new Date().toLocaleTimeString()
+  };
+  console.log("Adding notice:", newNotice);
+  setBulletins((prev) => [newNotice, ...prev]);
+  setTitle('');
+  setContent('');
+};
 
     setBulletins([newNotice, ...bulletins]);
     logSystemEvent('NEWS_BULLETIN_DISPATCH', title.trim());

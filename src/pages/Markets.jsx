@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { FaSearch, FaArrowUp, FaArrowDown, FaBoxes, FaShoppingCart, FaChartLine, FaExclamationTriangle } from 'react-icons/fa';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
-export default function Markets() {
+export default function Markets({ marketData = [] }) {
   const [searchQuery, setSearchQuery] = useState('');
   const [filterCategory, setFilterCategory] = useState('All');
 
@@ -83,7 +84,6 @@ export default function Markets() {
             </div>
           </div>
         </div>
-
         {/* COMMODITY GRID DATA TABLE */}
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs border-collapse">
@@ -136,6 +136,32 @@ export default function Markets() {
             </tbody>
           </table>
         </div>
+      </div>
+    </div>
+    
+  );
+  return (
+    <div className="space-y-6 animate-fadeIn">
+      
+      {/* 1. CHART SECTION (Previously the second return) */}
+      <div className="p-6 bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700">
+        <h2 className="text-xl font-bold mb-6 text-slate-900 dark:text-white">Market Intel: Price Trends</h2>
+        <div className="h-80 w-full">
+          <ResponsiveContainer>
+            <LineChart data={marketData}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="date" />
+              <YAxis />
+              <Tooltip />
+              <Line type="monotone" dataKey="price" stroke="#15803d" strokeWidth={3} />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
+
+      {/* 2. TABLE SECTION (Your existing grid/table logic) */}
+      <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-xs space-y-6">
+        {/* ... keep your existing search and table code here ... */}
       </div>
     </div>
   );
